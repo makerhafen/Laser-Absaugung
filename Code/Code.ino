@@ -6,8 +6,8 @@ const int SERVO_PIN = 9;  // pin of servo for finger
 const int VALVE_PIN = 10; // pin for pressure valve
 
 const float VENTILATION_ON_TIME = 45 * 1000.0; 
-const float PRESSURE_ON_TIME    = 10 * 1000.0; 
-const int COLORDIFF = 30;
+const float PRESSURE_ON_TIME    = 20 * 1000.0; 
+const int COLORDIFF = 50;
 const int SERVO_FINGER_UP_POSTITION   = 50;
 const int SERVO_FINGER_DOWN_POSTITION = 10;
 
@@ -34,7 +34,6 @@ void setup() {
   }
   servo_finger.attach(SERVO_PIN); // setup servo
   servo_finger.write(SERVO_FINGER_UP_POSTITION); // to default up position 
-  last_millis_green_on = millis() - 120000L;
   delay(1000);      
 }
 
@@ -69,24 +68,24 @@ void loop() {
 
   timediff = millis() - last_millis_green_on;
    
-  if(timediff > VENTILATION_ON_TIME ){// green led is or was on in the last VENTILATION_ON_TIME seconds, enable ventilation if not active
-    if(ventilation_is_active == true){
-      Serial.println("disable ventilation");
-      finger_click();
-      ventilation_is_active = false;
-    }
-  }else{
+  if(timediff < VENTILATION_ON_TIME && last_millis_green_on != 0 ){// green led is or was on in the last VENTILATION_ON_TIME seconds, enable ventilation if not active
     if(ventilation_is_active == false){
       Serial.println("enable ventilation");
       finger_click();
       ventilation_is_active = true;
     }    
+  }else{
+    if(ventilation_is_active == true){
+      Serial.println("disable ventilation");
+      finger_click();
+      ventilation_is_active = false;
+    }
   }
   
-  if(timediff > PRESSURE_ON_TIME){// green led is or was on in the last VENTILATION_ON_TIME seconds, enable ventilation if not active
-    digitalWrite(VALVE_PIN, LOW);
-  }else{
+  if(timediff < PRESSURE_ON_TIME && last_millis_green_on != 0){// green led is or was on in the last VENTILATION_ON_TIME seconds, enable ventilation if not active
      digitalWrite(VALVE_PIN, HIGH);
+  }else{
+     digitalWrite(VALVE_PIN, LOW);
   }
  
 }
