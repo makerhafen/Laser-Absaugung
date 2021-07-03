@@ -10,6 +10,7 @@ unsigned long AIRFLOW_ON_TIME     = 20000;
 const int COLORDIFF = 50;
 const int SERVO_FINGER_UP_POSTITION   = 50;
 const int SERVO_FINGER_DOWN_POSTITION = 10;
+const int MIN_COLOR_VALUE = 150;
 
 bool ventilation_is_active = false;
 unsigned long last_millis_green_on = 0;
@@ -57,11 +58,11 @@ void read_rgb(){
 void loop(){
   read_rgb();
 
-  if(green > red + COLORDIFF && green > blue + COLORDIFF){ // LED is green
+  if(green > red + COLORDIFF && green > blue + COLORDIFF && green > MIN_COLOR_VALUE){ // LED is green
     last_millis_green_on = millis();
   }
 
-  if(red > green + COLORDIFF &&   red > blue + COLORDIFF){ // LED is red, maybe estop, stop ventilation and air flow immediately
+  if(red > green + COLORDIFF &&   red > blue + COLORDIFF && red > MIN_COLOR_VALUE){ // LED is red, maybe estop, stop ventilation and air flow immediately
     last_millis_green_on = 0;
   }
 
